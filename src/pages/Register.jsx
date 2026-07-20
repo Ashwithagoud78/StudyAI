@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import "./Register.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "../api/api";
 
 function Register() {
-
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setUser({
@@ -18,7 +20,7 @@ function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (user.password !== user.confirmPassword) {
@@ -26,9 +28,24 @@ function Register() {
       return;
     }
 
-    console.log(user);
+    setLoading(true);
 
-    alert("Registration will be connected to backend.");
+    try {
+      const response = await registerUser({
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      });
+
+      if (response.data.success) {
+        alert("Registration successful");
+        navigate("/login");
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,8 +100,9 @@ function Register() {
             <button
               className="btn btn-success w-100"
               type="submit"
+              disabled={loading}
             >
-              Register
+              {loading ? "Creating account..." : "Register"}
             </button>
 
           </form>
