@@ -1,27 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./UploadNotes.css";
+import { createNote, deleteNote as deleteNoteApi, getNotes } from "../api/api";
 
 function UploadNotes() {
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
   const [file, setFile] = useState(null);
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: "Java Basics",
-      subject: "Java",
-      file: "java.pdf",
-    },
-    {
-      id: 2,
-      title: "DBMS Unit-1",
-      subject: "DBMS",
-      file: "dbms.pdf",
-    },
-  ]);
+  useEffect(() => {
+    fetchNotes();
+  }, []);
 
-  const handleUpload = (e) => {
+  const fetchNotes = async () => {
+    try {
+      const response = await getNotes();
+      setNotes(response.data.notes || []);
+    } catch (error) {
+      console.error("Failed to fetch notes", error);
+    }
+  };
+
+  const handleUpload = async (e) => {
     e.preventDefault();
 
     if (!title || !subject || !file) {
@@ -29,24 +30,38 @@ function UploadNotes() {
       return;
     }
 
-    const newNote = {
-      id: Date.now(),
-      title,
-      subject,
-      file: file.name,
-    };
+    setLoading(true);
 
-    setNotes([...notes, newNote]);
+    try {
+      const response = await createNote({
+        title,
+        subject,
+        file: file.name,
+      });
 
-    setTitle("");
-    setSubject("");
-    setFile(null);
-
-    alert("Note uploaded successfully!");
+      if (response.data.success) {
+        setNotes((prev) => [...prev, response.data.note]);
+        setTitle("");
+        setSubject("");
+        setFile(null);
+        alert("Note uploaded successfully!");
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Note upload failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteNote = (id) => {
-    setNotes(notes.filter((note) => note.id !== id));
+  const deleteNote = async (id) => {
+    try {
+      const response = await deleteNoteApi(id);
+      if (response.data.success) {
+        setNotes((prev) => prev.filter((note) => note.id !== id));
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to delete note");
+    }
   };
 
   return (
@@ -101,8 +116,9 @@ function UploadNotes() {
             <button
               className="btn btn-primary w-100"
               type="submit"
+              disabled={loading}
             >
-              Upload Notes
+              {loading ? "Uploading..." : "Upload Notes"}
             </button>
 
           </form>

@@ -1,8 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
 import { Link } from "react-router-dom";
+import { getDashboardData } from "../api/api";
 
 function Dashboard() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const response = await getDashboardData();
+        setData(response.data.data);
+      } catch (error) {
+        console.error("Failed to load dashboard data", error);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  if (!data) {
+    return <div className="container mt-5">Loading dashboard...</div>;
+  }
+
   return (
     <div className="dashboard">
 
@@ -22,28 +42,28 @@ function Dashboard() {
 
           <div className="col-md-3 mb-4">
             <div className="dashboard-card blue">
-              <h3>25</h3>
+              <h3>{data.stats.notesUploaded}</h3>
               <p>Notes Uploaded</p>
             </div>
           </div>
 
           <div className="col-md-3 mb-4">
             <div className="dashboard-card green">
-              <h3>12</h3>
+              <h3>{data.stats.quizzesTaken}</h3>
               <p>Quizzes Taken</p>
             </div>
           </div>
 
           <div className="col-md-3 mb-4">
             <div className="dashboard-card orange">
-              <h3>82%</h3>
+              <h3>{data.stats.studyProgress}</h3>
               <p>Study Progress</p>
             </div>
           </div>
 
           <div className="col-md-3 mb-4">
             <div className="dashboard-card purple">
-              <h3>156</h3>
+              <h3>{data.stats.aiQuestions}</h3>
               <p>AI Questions</p>
             </div>
           </div>
@@ -58,21 +78,11 @@ function Dashboard() {
 
           <div className="quick-buttons">
 
-            <Link to="/upload" className="btn btn-primary">
-              Upload Notes
-            </Link>
-
-            <Link to="/chat" className="btn btn-success">
-              AI Chat
-            </Link>
-
-            <Link to="/summary" className="btn btn-warning">
-              Summary
-            </Link>
-
-            <Link to="/quiz" className="btn btn-danger">
-              Quiz
-            </Link>
+            {data.quickActions.map((action) => (
+              <Link key={action.path} to={action.path} className="btn btn-primary me-2 mb-2">
+                {action.label}
+              </Link>
+            ))}
 
           </div>
 
@@ -100,29 +110,12 @@ function Dashboard() {
 
             <tbody>
 
-              <tr>
-
-                <td>Java Programming</td>
-
-                <td>Today</td>
-
-              </tr>
-
-              <tr>
-
-                <td>DBMS</td>
-
-                <td>Yesterday</td>
-
-              </tr>
-
-              <tr>
-
-                <td>Operating Systems</td>
-
-                <td>2 Days Ago</td>
-
-              </tr>
+              {data.recentNotes.map((note) => (
+                <tr key={note.subject}>
+                  <td>{note.subject}</td>
+                  <td>{note.uploaded}</td>
+                </tr>
+              ))}
 
             </tbody>
 
@@ -152,29 +145,12 @@ function Dashboard() {
 
             <tbody>
 
-              <tr>
-
-                <td>Java Basics</td>
-
-                <td>18 / 20</td>
-
-              </tr>
-
-              <tr>
-
-                <td>DBMS</td>
-
-                <td>16 / 20</td>
-
-              </tr>
-
-              <tr>
-
-                <td>React</td>
-
-                <td>19 / 20</td>
-
-              </tr>
+              {data.recentQuizScores.map((score) => (
+                <tr key={score.quiz}>
+                  <td>{score.quiz}</td>
+                  <td>{score.score}</td>
+                </tr>
+              ))}
 
             </tbody>
 
