@@ -1,38 +1,208 @@
-.App {
-  text-align: center;
+/* ===========================
+   Google Font
+=========================== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ===========================
+   Global Styles
+=========================== */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html{
+    scroll-behavior:smooth;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body{
+    font-family:'Poppins',sans-serif;
+    background:#f4f7fc;
+    color:#222;
+    overflow-x:hidden;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* ===========================
+   Links
+=========================== */
+a{
+    text-decoration:none;
+    color:inherit;
 }
 
-.App-link {
-  color: #61dafb;
+a:hover{
+    text-decoration:none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* ===========================
+   Images
+=========================== */
+img{
+    max-width:100%;
+    display:block;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+.btn-primary-custom{
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    padding:12px 30px;
+    border-radius:8px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-primary-custom:hover{
+    background:#1d4ed8;
+    color:#fff;
+}
+
+.btn-outline-custom{
+    background:transparent;
+    border:2px solid #2563eb;
+    color:#2563eb;
+    padding:12px 30px;
+    border-radius:8px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-outline-custom:hover{
+    background:#2563eb;
+    color:#fff;
+}
+
+/* ===========================
+   Cards
+=========================== */
+.card-custom{
+    background:#fff;
+    border:none;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.card-custom:hover{
+    transform:translateY(-5px);
+}
+
+/* ===========================
+   Sections
+=========================== */
+.section{
+    padding:70px 0;
+}
+
+.section-title{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.section-title h2{
+    font-size:38px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.section-title p{
+    color:#6b7280;
+    font-size:18px;
+}
+
+/* ===========================
+   Forms
+=========================== */
+.form-control{
+    border-radius:8px;
+    padding:12px;
+}
+
+.form-control:focus{
+    box-shadow:none;
+    border-color:#2563eb;
+}
+
+/* ===========================
+   Dashboard
+=========================== */
+.dashboard-card{
+    background:#fff;
+    border-radius:15px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.dashboard-card h3{
+    font-size:32px;
+    color:#2563eb;
+}
+
+.dashboard-card p{
+    margin-top:10px;
+    color:#666;
+}
+
+/* ===========================
+   Chat
+=========================== */
+.chat-box{
+    height:500px;
+    background:#fff;
+    border-radius:12px;
+    overflow-y:auto;
+    padding:20px;
+    box-shadow:0 5px 12px rgba(0,0,0,.08);
+}
+
+.chat-input{
+    margin-top:20px;
+}
+
+/* ===========================
+   Footer Space
+=========================== */
+main{
+    min-height:80vh;
+}
+
+/* ===========================
+   Scrollbar
+=========================== */
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#2563eb;
+    border-radius:20px;
+}
+
+::-webkit-scrollbar-track{
+    background:#e5e7eb;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+@media(max-width:768px){
+
+.section-title h2{
+    font-size:28px;
+}
+
+.dashboard-card{
+    margin-bottom:20px;
+}
+
+.btn-primary-custom,
+.btn-outline-custom{
+    width:100%;
+}
 }

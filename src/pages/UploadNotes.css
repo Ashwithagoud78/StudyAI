@@ -1,0 +1,61 @@
+.upload-page{
+    background:#f4f7fc;
+    min-height:90vh;
+    padding:40px 0;
+}
+
+.page-title{
+    text-align:center;
+    color:#2563eb;
+    font-weight:700;
+    margin-bottom:30px;
+}
+
+.upload-card{
+    background:#fff;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+    margin-bottom:40px;
+}
+
+.notes-table{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.notes-table h3{
+    color:#2563eb;
+    margin-bottom:20px;
+}
+
+.table td,
+.table th{
+    vertical-align:middle;
+}
+
+.btn-success{
+    min-width:70px;
+}
+
+.btn-danger{
+    min-width:75px;
+}
+
+@media(max-width:768px){
+
+.upload-card{
+    padding:20px;
+}
+
+.notes-table{
+    overflow-x:auto;
+}
+
+table{
+    min-width:700px;
+}
+
+}

@@ -1,0 +1,32 @@
+.custom-navbar{
+    background:#2563eb;
+    padding:12px 0;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+.navbar-brand{
+    color:white !important;
+}
+
+.nav-link{
+    color:white !important;
+    margin-right:10px;
+    font-weight:500;
+}
+
+.nav-link:hover{
+    color:#ffd43b !important;
+}
+
+.navbar .btn{
+    border-radius:8px;
+}
+
+@media(max-width:991px){
+
+.navbar .btn{
+    margin-top:10px;
+    width:100%;
+}
+
+}
