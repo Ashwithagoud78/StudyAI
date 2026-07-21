@@ -1,4 +1,4 @@
-const { listNotes, createNote, deleteNote } = require('../services/notesService');
+import { listNotes, createNote, deleteNote, generateStudyPack } from '../services/notesService.js';
 
 async function getNotes(req, res) {
   try {
@@ -44,8 +44,33 @@ async function removeNote(req, res) {
   }
 }
 
-module.exports = {
+async function generateStudyPackController(req, res) {
+  try {
+    const { notes } = req.body;
+
+    if (!notes) {
+      return res.status(400).json({
+        success: false,
+        message: 'Notes text is required'
+      });
+    }
+
+    const studyPack = await generateStudyPack(notes);
+    return res.status(200).json({
+      success: true,
+      data: studyPack
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}
+
+export {
   getNotes,
   addNote,
-  removeNote
+  removeNote,
+  generateStudyPackController
 };

@@ -13,5 +13,6 @@ export const getNotes = () => api.get("/notes");
 export const createNote = (payload) => api.post("/notes", payload);
 export const deleteNote = (id) => api.delete(`/notes/${id}`);
 export const getDashboardData = () => api.get("/dashboard");
+export const generateStudyPack = (notes) => api.post("/notes/study-pack", { notes });
 
 export default api;

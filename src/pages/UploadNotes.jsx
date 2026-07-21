@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./UploadNotes.css";
-import { createNote, deleteNote as deleteNoteApi, getNotes } from "../api/api";
+import { createNote, deleteNote as deleteNoteApi, getNotes, generateStudyPack } from "../api/api";
 
 function UploadNotes() {
   const [title, setTitle] = useState("");
@@ -8,6 +8,11 @@ function UploadNotes() {
   const [file, setFile] = useState(null);
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [studyPackLoading, setStudyPackLoading] = useState(false);
+  const [studyPack, setStudyPack] = useState(null);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [submittedQuiz, setSubmittedQuiz] = useState(false);
+  const [flippedCards, setFlippedCards] = useState({});
 
   useEffect(() => {
     fetchNotes();
@@ -50,6 +55,21 @@ function UploadNotes() {
       alert(error.response?.data?.message || "Note upload failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateStudyPack = async (noteText) => {
+    setStudyPackLoading(true);
+    setUserAnswers({});
+    setSubmittedQuiz(false);
+    setFlippedCards({});
+    try {
+      const response = await generateStudyPack(noteText);
+      setStudyPack(response.data.data);
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to generate study pack");
+    } finally {
+      setStudyPackLoading(false);
     }
   };
 
@@ -161,8 +181,12 @@ function UploadNotes() {
 
                   <td>
 
-                    <button className="btn btn-success btn-sm me-2">
-                      View
+                    <button 
+                      className="btn btn-success btn-sm me-2"
+                      onClick={() => handleGenerateStudyPack(`Title: ${note.title}, Subject: ${note.subject}, File: ${note.file}`)}
+                      disabled={studyPackLoading}
+                    >
+                      {studyPackLoading ? "Generating..." : "Generate AI Pack"}
                     </button>
 
                     <button
@@ -183,6 +207,106 @@ function UploadNotes() {
           </table>
 
         </div>
+
+        {studyPack && (
+          <div className="mt-5 p-4 bg-white rounded shadow">
+            <h3 className="mb-4">Generated AI Study Pack</h3>
+            
+            <h4 className="text-secondary">
+              Flashcards <small className="text-muted fs-6">(Click a card to flip)</small>
+            </h4>
+            <div className="row mb-4">
+              {studyPack.flashcards.map((card, index) => {
+                const isFlipped = flippedCards[index];
+
+                return (
+                  <div key={index} className="col-md-6 mb-3">
+                    <div 
+                      className={`flashcard-container ${isFlipped ? "flipped" : ""}`}
+                      onClick={() => setFlippedCards(prev => ({ ...prev, [index]: !prev[index] }))}
+                    >
+                      <div className="flashcard-inner">
+                        <div className="flashcard-front">
+                          <span className="badge bg-primary mb-2">Question {index + 1}</span>
+                          <p className="card-text fw-bold mb-0">{card.front}</p>
+                        </div>
+                        <div className="flashcard-back">
+                          <span className="badge bg-secondary mb-2">Answer {index + 1}</span>
+                          <p className="card-text mb-0">{card.back}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <h4 className="text-secondary mb-3">Quiz</h4>
+            {studyPack.quiz.map((q, qIndex) => {
+              const selectedOption = userAnswers[qIndex];
+              const isSubmitted = submittedQuiz;
+              const isCorrect = selectedOption === q.answer;
+
+              return (
+                <div key={qIndex} className="card mb-3 shadow-sm">
+                  <div className="card-body">
+                    <p className="card-text fw-bold">Q{qIndex + 1}: {q.question}</p>
+                    <div className="list-group">
+                      {q.options.map((opt, i) => {
+                        let variant = "list-group-item-action";
+                        if (selectedOption === opt) {
+                          variant = "active";
+                        }
+                        if (isSubmitted) {
+                          if (opt === q.answer) {
+                            variant = "list-group-item-success";
+                          } else if (selectedOption === opt && !isCorrect) {
+                            variant = "list-group-item-danger";
+                          }
+                        }
+
+                        return (
+                          <button
+                            type="button"
+                            key={i}
+                            className={`list-group-item ${variant}`}
+                            onClick={() => !submittedQuiz && setUserAnswers(prev => ({ ...prev, [qIndex]: opt }))}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {isSubmitted && (
+                      <div className={`mt-3 alert ${isCorrect ? "alert-success" : "alert-danger"} py-2 mb-0`}>
+                        {isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${q.answer}`}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {!submittedQuiz ? (
+              <button 
+                className="btn btn-primary btn-lg mt-3"
+                onClick={() => setSubmittedQuiz(true)}
+              >
+                Submit Quiz
+              </button>
+            ) : (
+              <button 
+                className="btn btn-outline-secondary btn-lg mt-3"
+                onClick={() => {
+                  setSubmittedQuiz(false);
+                  setUserAnswers({});
+                }}
+              >
+                Retake Quiz
+              </button>
+            )}
+          </div>
+        )}
 
       </div>
     </div>
