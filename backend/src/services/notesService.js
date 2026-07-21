@@ -1,43 +1,18 @@
-const notes = [
-  {
-    id: 1,
-    title: 'Java Basics',
-    subject: 'Java',
-    file: 'java.pdf'
-  },
-  {
-    id: 2,
-    title: 'DBMS Unit-1',
-    subject: 'DBMS',
-    file: 'dbms.pdf'
-  }
-];
+const Note = require('../models/Note');
 
-function listNotes() {
-  return notes;
+async function listNotes() {
+  return await Note.find().sort({ createdAt: -1 }).exec();
 }
 
-function createNote({ title, subject, file }) {
-  const newNote = {
-    id: Date.now(),
-    title,
-    subject,
-    file
-  };
-
-  notes.push(newNote);
+async function createNote({ title, subject, file }) {
+  const newNote = new Note({ title, subject, file });
+  await newNote.save();
   return newNote;
 }
 
-function deleteNote(id) {
-  const index = notes.findIndex((note) => note.id === Number(id));
-
-  if (index === -1) {
-    return null;
-  }
-
-  const deletedNote = notes.splice(index, 1)[0];
-  return deletedNote;
+async function deleteNote(id) {
+  const deleted = await Note.findByIdAndDelete(id).exec();
+  return deleted;
 }
 
 module.exports = {

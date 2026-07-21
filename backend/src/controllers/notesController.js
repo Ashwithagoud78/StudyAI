@@ -1,45 +1,47 @@
 const { listNotes, createNote, deleteNote } = require('../services/notesService');
 
-function getNotes(req, res) {
-  res.status(200).json({
-    success: true,
-    notes: listNotes()
-  });
+async function getNotes(req, res) {
+  try {
+    const notes = await listNotes();
+    res.status(200).json({ success: true, notes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 }
 
-function addNote(req, res) {
-  const { title, subject, file } = req.body;
+async function addNote(req, res) {
+  try {
+    const { title, subject, file } = req.body;
 
-  if (!title || !subject || !file) {
-    return res.status(400).json({
-      success: false,
-      message: 'Title, subject, and file are required'
-    });
+    if (!title || !subject || !file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title, subject, and file are required'
+      });
+    }
+
+    const note = await createNote({ title, subject, file });
+    return res.status(201).json({ success: true, message: 'Note uploaded successfully', note });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
-
-  const note = createNote({ title, subject, file });
-  return res.status(201).json({
-    success: true,
-    message: 'Note uploaded successfully',
-    note
-  });
 }
 
-function removeNote(req, res) {
-  const deleted = deleteNote(req.params.id);
+async function removeNote(req, res) {
+  try {
+    const deleted = await deleteNote(req.params.id);
 
-  if (!deleted) {
-    return res.status(404).json({
-      success: false,
-      message: 'Note not found'
-    });
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'Note not found' });
+    }
+
+    return res.status(200).json({ success: true, message: 'Note deleted successfully', note: deleted });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
-
-  return res.status(200).json({
-    success: true,
-    message: 'Note deleted successfully',
-    note: deleted
-  });
 }
 
 module.exports = {
