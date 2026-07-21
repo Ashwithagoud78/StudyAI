@@ -1,7 +1,8 @@
-const users = [];
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
-function registerUser({ name, email, password }) {
-  const existingUser = users.find((user) => user.email === email);
+async function registerUser({ name, email, password }) {
+  const existingUser = await User.findOne({ email }).exec();
 
   if (existingUser) {
     return {
@@ -10,21 +11,16 @@ function registerUser({ name, email, password }) {
     };
   }
 
-  const newUser = {
-    id: Date.now(),
-    name,
-    email,
-    password,
-    role: 'student'
-  };
+  const hash = await bcrypt.hash(password, 10);
 
-  users.push(newUser);
+  const newUser = new User({ name, email, password: hash });
+  await newUser.save();
 
   return {
     success: true,
     message: 'User registered successfully',
     user: {
-      id: newUser.id,
+      id: newUser._id,
       name: newUser.name,
       email: newUser.email,
       role: newUser.role
@@ -32,10 +28,19 @@ function registerUser({ name, email, password }) {
   };
 }
 
-function loginUser({ email, password }) {
-  const user = users.find((item) => item.email === email && item.password === password);
+async function loginUser({ email, password }) {
+  const user = await User.findOne({ email }).exec();
 
   if (!user) {
+    return {
+      success: false,
+      message: 'Invalid email or password'
+    };
+  }
+
+  const match = await bcrypt.compare(password, user.password);
+
+  if (!match) {
     return {
       success: false,
       message: 'Invalid email or password'
@@ -46,7 +51,7 @@ function loginUser({ email, password }) {
     success: true,
     message: 'Login successful',
     user: {
-      id: user.id,
+      id: user._id,
       name: user.name,
       email: user.email,
       role: user.role

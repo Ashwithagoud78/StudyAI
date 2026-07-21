@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +33,17 @@ app.get('/', (req, res) => {
   res.send('StudyAI backend is running');
 });
 
-app.listen(PORT, () => {
-  console.log(`StudyAI backend running on http://localhost:${PORT}`);
+const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/studyai';
+
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('Connected to MongoDB');
+  app.listen(PORT, () => {
+    console.log(`StudyAI backend running on http://localhost:${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Failed to connect to MongoDB', err);
+  process.exit(1);
 });
