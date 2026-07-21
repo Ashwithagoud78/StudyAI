@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import 'dotenv/config';
 import Groq from 'groq-sdk';
 
@@ -65,4 +63,3 @@ export async function generateStudyPack(notesInput) {
 
   return JSON.parse(completion.choices[0].message.content);
 }
->>>>>>> 559978b (used groq api)
